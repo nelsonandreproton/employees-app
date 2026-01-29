@@ -280,16 +280,27 @@ function EmployeeBrowserApp() {
     setSuccessMessage(null);
 
     try {
+      // Only include optional fields if they have actual values
+      const updateArgs: Record<string, unknown> = {
+        Id: editedEmployee.Id,
+        Name: editedEmployee.Name,
+      };
+      if (editedEmployee.NIF) {
+        updateArgs.NIF = editedEmployee.NIF;
+      }
+      if (editedEmployee.DateOfBirth) {
+        updateArgs.DateOfBirth = editedEmployee.DateOfBirth;
+      }
+      if (editedEmployee.Address) {
+        updateArgs.Address = editedEmployee.Address;
+      }
+      if (editedEmployee.Phone) {
+        updateArgs.Phone = editedEmployee.Phone;
+      }
+
       const result = await appInstance.callServerTool({
         name: "update-employee",
-        arguments: {
-          Id: editedEmployee.Id,
-          Name: editedEmployee.Name,
-          NIF: editedEmployee.NIF || 0,
-          DateOfBirth: editedEmployee.DateOfBirth || "",
-          Address: editedEmployee.Address || "",
-          Phone: editedEmployee.Phone || "",
-        },
+        arguments: updateArgs,
       });
 
       const data = result.structuredContent as unknown as UpdateResult;

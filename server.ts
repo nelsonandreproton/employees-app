@@ -69,7 +69,17 @@ async function updateEmployee(employee: Employee): Promise<void> {
     if (response.status === 404) {
       throw new Error("Employee not found");
     }
-    throw new Error(`Failed to update employee (HTTP ${response.status})`);
+    // Try to get more details from the response body
+    let errorDetail = "";
+    try {
+      const errorBody = await response.text();
+      if (errorBody) {
+        errorDetail = `: ${errorBody}`;
+      }
+    } catch {
+      // Ignore if we can't read the body
+    }
+    throw new Error(`Failed to update employee (HTTP ${response.status})${errorDetail}`);
   }
 }
 
