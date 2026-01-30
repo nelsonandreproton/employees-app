@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run build:*)",
+      "Bash(ls:*)",
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nFix employee update HTTP 500 error\n\n- Only send optional fields \\(NIF, DateOfBirth, Address, Phone\\) when they\n  have actual values, instead of sending 0 or empty strings\n- Improve error handling to capture actual error details from API responses\n- Update README with changelog\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(git push:*)"
+    ]
+  }
+}
