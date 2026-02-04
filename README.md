@@ -124,6 +124,9 @@ The app connects to a REST API at:
 
 ## Changelog
 
+### v1.0.2
+- **Fixed:** Detail/edit views no longer show extra black background space - Removed fixed `height: 100%` constraints so container height adapts to content
+
 ### v1.0.1
 - **Fixed:** Employee update HTTP 500 error - Optional fields (NIF, DateOfBirth, Address, Phone) are now only sent when they have actual values, preventing invalid data from being sent to the API
 - **Improved:** Better error messages when API calls fail - error responses now include details from the server
