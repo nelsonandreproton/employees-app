@@ -19,6 +19,7 @@ type View = "list" | "detail" | "edit";
 
 interface ListResult {
   employees: Employee[];
+  selectedEmployee?: Employee | null;
   error: string | null;
 }
 
@@ -27,6 +28,8 @@ interface UpdateResult {
   employee: Employee | null;
   error: string | null;
 }
+
+const LOGO_URL = "data:image/jpeg;base64,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RhGzMWEBdSOhgnk0MRjFYPdjFWBC9aVg4ykYXbSF6KKakW26QAFKBwjN18ojioukZHOFOWwocEzI8gWDIeIANsVQMF3eC3xACdLFQHsS4QkcIxP7w//aAAwDAQACAAMAAAAQ99999999999999999999999999999999999999999999999999999734+99999999ufbJcggC989999/0/8AE7hCvMvvb2dKarLDf3rfvffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff/xAAoEQEAAQMDBAEDBQAAAAAAAAABEQAhMUFRYXGRobHwECAwUGDB4fH/2gAIAQMBAT8Q/VbaePPbPikVCXoJsVJtHzTP4SIu57qSoiLaYNMUAwjvh+dIqYiNwt9N/fNPDwrmnbijeea3GyizkikymQ66Us5AibpYwChnpQPS3RbkFtKSUE5Z+zyj3Xr+lYNNL3amWHmvJqDlCVgmb7UZQEhOBrMtqSy7JG6xszUt0OOWbzb+a4lGomN4zTObInJMbxmKAjA4ubT9HE5L0c2ImF7c/wC0XRsIWgqNXyfOzzSZRdIv879aO6GWuJZq2nEIunXSkkQEBO+sxVhKNYhKEI6dTz/VS3dF0sR03+RTgiIA7fsP/8QAKBEAAgEDAwQABwEAAAAAAAAAAREAITFBUWFxkaGx8BAgMFBggcHh/9oACAECAQE/EPuuCPt1tAQDEJVTFSP3NvokQUaHxEOlvm5zeEiZ23HvWL+FQQ0z6oFAMKHPWFpCq7rMNEQAI2BsTxmBHRghYg8kAm3MJkBKkQKFmsEBcHZb5O3PieV5S+RmlBEiEbTs44ISAAOipDH4CyqzsrwAgoJRoqnZRFHOmlqKv8m7GrFPRwKVTVino7OG5WRsePgIxZhWrNNSvu0JAXDVcYj2PfVBUSTRDT3pxDsML+0FKqUmEM8ZgIuRIEVpiVzIw2DCBBGWPt/sVFDaQb50gjCWyT1/A//EACgQAQACAgIBAwMFAQEAAAAAAAERIQAxQVFhcYGREDChIHCxwfBA4f/aAAgBAQABPxD94wj8bKtMgS6mewxEAEx/UHwuLRnkfE/UDPpghgA5cNwczfEUE+i5f0Q6B2+jyKHMf8IZtcKDJ7lYsKpOwxB4P6mRsvbU+KPlYE4GGz4Anuhivl4dHyl+BMgJOir80fCxInQ2NMOpsPEvJiHLJSTbdw8HUc4oUo5LQDpRs5G/IkwvWY+wh7YZO9cKbhIZue52YguIgOYScnJsxciyrEsleDR/GKpcYibgEh4+MgqPMJdEgq+AwI4BUSU1F5I/Ju8Fo2iQIop2/GWlyIuTSIa4X7H+v0/RQ0Z5HzGR8DTofFXujlBWkMvB3OlYqauvqi2psSr7SHI4sGiXqfUEyrpfICVMnyGNO6UnqGFClQggMEg1MrEzzwRVWBEQSniRDseMh4bYomkoWp6ucqHhO4HjHalMz7JVfY/1+n2qRbTyCjaCEIihr1y6DZyiSSpwKcsrFbZLzStpgwakIn3yn7SfI6ezw4SkIM4gmKKNuQwOGBGYmN7fn7P+v0+tT9TNh2JGALXyHMiOagDFHDpL5l9MU9KQe1L9g/Si2hDwpjSsMdhfnJd1kMJNKR2v0cbDOZgDZQS0EK/EoPnlgzIO5EdemBsr0tBSu+WusIwF1EjIBY2pvCBkCxYVC7trB87bOslVOF75fayFpoQpWR3dYdmakA5iSzEowQrvDHhBxK6ZKRhJghqMfoFRJQeUoS8S+M5iogIW6bU9vrKI0OCZfE4FxOAC1FoN/XEg4D3eT+DnBbWIhH5jLPldTj7szTO2QK97wFxaTX8rT29mXFd/qCnuh85HLejUPkPaTziOmCAmT1Q8XSAVOyUxLW0ZSWiIyMkASSClmyt3ExkUJzey2VpUtmn0zSVinA5SUbWzPOCUyEAMnJzOS9sJbgF/jASGFQJIkAur1gZBQiax43rDO3Vnh43kSFwNKTaUSGSYayGWDsPYIkCyW9XE5KXioTAOIHuH6RvKMANA1DuR9cc4Vo97VH4wyFQCCaDgP/W368/emk6Y2eHBzmRT7uz2wYn0AV7RHor1zY3QxGV/fD//2Q==";
 
 const styles: Record<string, React.CSSProperties> = {
   container: {
@@ -40,6 +43,12 @@ const styles: Record<string, React.CSSProperties> = {
     display: "flex",
     alignItems: "center",
     gap: "12px",
+  },
+  logo: {
+    width: "36px",
+    height: "36px",
+    borderRadius: "6px",
+    objectFit: "contain" as const,
   },
   title: {
     fontSize: "1.25rem",
@@ -191,6 +200,12 @@ function EmployeeBrowserApp() {
     } else if (data?.employees) {
       setEmployees(data.employees);
       setError(null);
+
+      // If a selected employee is provided, navigate to detail view
+      if (data.selectedEmployee) {
+        setSelectedEmployee(data.selectedEmployee);
+        setView("detail");
+      }
     }
     setLoading(false);
   }, []);
@@ -386,6 +401,7 @@ function EmployeeBrowserApp() {
     return (
       <div style={containerStyle}>
         <header style={styles.header}>
+          <img src={LOGO_URL} alt="Logo" style={styles.logo} />
           <button style={styles.button} onClick={handleCancelEdit} disabled={saving}>
             ← Cancel
           </button>
@@ -481,6 +497,7 @@ function EmployeeBrowserApp() {
     return (
       <div style={containerStyle}>
         <header style={styles.header}>
+          <img src={LOGO_URL} alt="Logo" style={styles.logo} />
           <button style={styles.button} onClick={handleBackToList}>
             ← Back to List
           </button>
@@ -544,6 +561,7 @@ function EmployeeBrowserApp() {
   return (
     <div style={containerStyle}>
       <header style={styles.header}>
+        <img src={LOGO_URL} alt="Logo" style={styles.logo} />
         <h1 style={styles.title}>Employees ({employees.length})</h1>
       </header>
 

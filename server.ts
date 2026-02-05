@@ -110,27 +110,66 @@ export function createServer(): McpServer {
         const employees = await fetchEmployees();
         const result = { employees, error: null };
         return {
-          content: [{ type: "text", text: JSON.stringify(result) }],
+          content: [{ type: "text", text: `Displayed ${employees.length} employees in the UI above. Do not list employees in text form.` }],
           structuredContent: result,
         };
       } catch (err) {
         const error = err instanceof Error ? err.message : String(err);
         const result = { employees: [], error };
         return {
-          content: [{ type: "text", text: JSON.stringify(result) }],
+          content: [{ type: "text", text: `Error: ${error}` }],
           structuredContent: result,
         };
       }
     }
   );
 
-  // Tool to get employee details (called from UI)
+  // Tool to show employee details in the UI (callable by Claude)
+  registerAppTool(
+    server,
+    "show-employee-details",
+    {
+      title: "Show Employee Details",
+      description: "USE THIS TOOL when the user asks to see, view, or show employee details. Displays the employee information in an interactive visual UI panel.",
+      inputSchema: z.object({
+        employeeId: z.number().describe("The ID of the employee to show"),
+      }),
+      outputSchema: z.object({
+        employees: z.array(employeeSchema),
+        selectedEmployee: employeeSchema.nullable(),
+        error: z.string().nullable(),
+      }),
+      _meta: { ui: { resourceUri } },
+    },
+    async ({ employeeId }): Promise<CallToolResult> => {
+      try {
+        const [employees, selectedEmployee] = await Promise.all([
+          fetchEmployees(),
+          fetchEmployeeById(employeeId),
+        ]);
+        const result = { employees, selectedEmployee, error: null };
+        return {
+          content: [{ type: "text", text: `Displayed details for ${selectedEmployee.Name} in the UI above. Do not repeat the details in text form.` }],
+          structuredContent: result,
+        };
+      } catch (err) {
+        const error = err instanceof Error ? err.message : String(err);
+        const result = { employees: [], selectedEmployee: null, error };
+        return {
+          content: [{ type: "text", text: `Error: ${error}` }],
+          structuredContent: result,
+        };
+      }
+    }
+  );
+
+  // Tool to get employee details (called from UI only - not for Claude)
   registerAppTool(
     server,
     "get-employee-details",
     {
       title: "Get Employee Details",
-      description: "Returns detailed information about a specific employee.",
+      description: "Internal API for the UI app. Do NOT use this directly - use show-employee-details instead to display employee details to the user.",
       inputSchema: z.object({
         employeeId: z.number().describe("The ID of the employee to fetch"),
       }),
